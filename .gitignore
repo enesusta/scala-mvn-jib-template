@@ -1,6 +1,7 @@
 # Created by https://www.gitignore.io/api/scala
 ### Intellij IDEA ###
 .idea
+*.iml
 
 ### Scala ###
 *.class
