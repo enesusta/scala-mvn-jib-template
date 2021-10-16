@@ -1,0 +1,273 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.github.enesusta</groupId>
+    <artifactId>scala-mvn-jib-template</artifactId>
+    <version>1.0</version>
+
+    <name>scala-mvn-jib-template</name>
+    <url>https://github.com/enesusta/scala-mvn-jib-template</url>
+
+    <properties>
+        <mvn.compiler.source>1.8</mvn.compiler.source>
+        <mvn.compiler.target>1.8</mvn.compiler.target>
+        <scala.version>2.12.12</scala.version>
+        <spec2.version>4.2.0</spec2.version>
+        <scala.compat.version>2.12</scala.compat.version>    <spec2.version>4.2.0</spec2.version>
+        <scoverage.plugin.version>1.4.0</scoverage.plugin.version>
+        <jacoco-maven-plugin.version>0.8.3</jacoco-maven-plugin.version>
+        <sonar-maven-plugin.version>3.7.0.1746</sonar-maven-plugin.version>
+        <maven-deploy-plugin.version>2.8.1</maven-deploy-plugin.version>
+        <nexus-staging-maven-plugin.version>1.5.1</nexus-staging-maven-plugin.version>
+
+        <!-- SONAR -->
+        <sonar.projectName>your-project-name</sonar.projectName>
+        <sonar.projectKey>your-project-key</sonar.projectKey>
+        <sonar.scala.version>${scala.version}</sonar.scala.version>
+        <sonar.sourceEncoding>UTF-8</sonar.sourceEncoding>
+        <sonar.scala.coverage.reportPaths>target/scoverage.xml</sonar.scala.coverage.reportPaths>
+        <sonar.core.codeCoveragePlugin>scoverage</sonar.core.codeCoveragePlugin>
+        <sonar.junit.reportsPath>target/surefire-reports</sonar.junit.reportsPath>
+        <sonar.scoverage.reportPath>target/scoverage.xml</sonar.scoverage.reportPath>
+
+        <sonar.exclusions>
+            **/model/*,
+            **/model/enum/Application.scala,
+            **/trendyol/helper/*,
+            **/trendyol/app/*,
+            **/trendyol/config/*,
+        </sonar.exclusions>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.scala-lang</groupId>
+            <artifactId>scala-library</artifactId>
+            <version>${scala.version}</version>
+        </dependency>
+
+        <!-- Test -->
+        <dependency>
+            <groupId>org.scalatest</groupId>
+            <artifactId>scalatest_${scala.compat.version}</artifactId>
+            <version>3.3.0-SNAP3</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.specs2</groupId>
+            <artifactId>specs2-core_${scala.compat.version}</artifactId>
+            <version>${spec2.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.specs2</groupId>
+            <artifactId>specs2-junit_${scala.compat.version}</artifactId>
+            <version>${spec2.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.specs2</groupId>
+            <artifactId>specs2-mock_${scala.compat.version}</artifactId>
+            <version>${spec2.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.specs2</groupId>
+            <artifactId>specs2-matcher_${scala.compat.version}</artifactId>
+            <version>${spec2.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.specs2</groupId>
+            <artifactId>specs2-matcher-extra_${scala.compat.version}</artifactId>
+            <version>${spec2.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <!-- TEST END -->
+    </dependencies>
+
+    <build>
+        <sourceDirectory>src/main/scala</sourceDirectory>
+        <testSourceDirectory>src/test/scala</testSourceDirectory>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>net.alchim31.maven</groupId>
+                    <artifactId>scala-maven-plugin</artifactId>
+                    <version>4.5.4</version>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+
+        <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>add-source</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>add-source</goal>
+                        </goals>
+                        <configuration>
+                            <sources>
+                                <source>src/main/scala</source>
+                            </sources>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>add-test-source</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>add-test-source</goal>
+                        </goals>
+                        <configuration>
+                            <sources>
+                                <source>src/test/scala</source>
+                            </sources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>net.alchim31.maven</groupId>
+                <artifactId>scala-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>compile</goal>
+                            <goal>testCompile</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <scalaVersion>${scala.version}</scalaVersion>
+                    <recompileMode>incremental</recompileMode>
+                    <source>${mvn.compiler.source}</source>
+                    <target>${mvn.compiler.target}</target>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.scalatest</groupId>
+                <artifactId>scalatest-maven-plugin</artifactId>
+                <version>2.0.2</version>
+                <configuration>
+                    <reportsDirectory>${project.build.directory}/surefire-reports</reportsDirectory>
+                    <junitxml>.</junitxml>
+                    <filereports>TestSuiteReport.txt</filereports>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>test</id>
+                        <goals>
+                            <goal>test</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.22.2</version>
+                <configuration>
+                    <includes>
+                        <include>**/*Spec.scala</include>
+                        <include>**/*Test.scala</include>
+                        <include>**/*Fakes.scala</include>
+                    </includes>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.scoverage</groupId>
+                <artifactId>scoverage-maven-plugin</artifactId>
+                <version>${scoverage.plugin.version}</version>
+                <configuration>
+                    <scalaVersion>${scala.version}</scalaVersion>
+                    <aggregate>true</aggregate>
+                    <excludedFiles>.*Fakes</excludedFiles>
+                </configuration>
+            </plugin>
+
+
+            <plugin>
+                <groupId>org.sonarsource.scanner.maven</groupId>
+                <artifactId>sonar-maven-plugin</artifactId>
+                <version>${sonar-maven-plugin.version}</version>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>2.4</version>
+                <configuration>
+                    <descriptorRefs>
+                        <descriptorRef>jar-with-dependencies</descriptorRef>
+                    </descriptorRefs>
+                    <archive>
+                        <manifest>
+                            <mainClass>com.github.enesusta.Main</mainClass>
+                        </manifest>
+                    </archive>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>com.google.cloud.tools</groupId>
+                <artifactId>jib-maven-plugin</artifactId>
+                <version>3.1.4</version>
+
+                <configuration>
+                    <from>
+                        <image>
+                            any-registry.com/openjdk8-openj9:newrelic-7.0.0_mvn-3.8.1
+                        </image>
+                        <auth>
+                            <username>${env.REGISTRY_USER}</username>
+                            <password>${env.REGISTRY_PASS}</password>
+                        </auth>
+                    </from>
+                    <to>
+                        <image>${env.IMAGE}-</image>
+                        <tags>
+                            <tag>latest</tag>
+                            <tag>${env.CI_COMMIT_SHORT_SHA}</tag>
+                        </tags>
+                        <auth>
+                            <username>${env.REGISTRY_USER}</username>
+                            <password>${env.REGISTRY_PASS}</password>
+                        </auth>
+                    </to>
+                    <container>
+                        <ports>9000</ports>
+                        <mainClass>com.github.enesusta.Main</mainClass>
+                        <jvmFlags>
+                            <jvmFlag>-javaagent:/newrelic-agent-7.0.0.jar</jvmFlag>
+                        </jvmFlags>
+                    </container>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>
